@@ -4,7 +4,7 @@ import sys
 
 start = timeit.default_timer()
 basepath = path.dirname(__file__)
-filepath = path.abspath(path.join(basepath, "input1.txt"))
+filepath = path.abspath(path.join(basepath, "test1.txt"))
 with open(filepath, "r") as fp:
     lines = [line.rstrip() for line in fp.readlines()]
 
@@ -89,31 +89,83 @@ def dijkstra_algorithm(graph, start_node):
 rows, cols = len(lines), len(lines[0])
 
 nodes = []
-lastNode = str(rows-1) + "_" + str(cols-1)
-startNode = "0_0"
-for row in range(0,rows):
-    for col in range(0,cols):
-        nodes.append(str(row) + "_" + str(col))
+lastNode = ((rows*5-1),(cols*5-1))
+startNode = (0,0)
+for row in range(0,rows*5):
+    for col in range(0,cols*5):
+        nodes.append((row,col))
 init_graph = {}
 for node in nodes:
     init_graph[node] = {}
 
-for row in range(0,rows):
-    for col in range(0,cols):
-        current_node = str(row) + "_" + str(col)
-        if row + 1 < rows:
-            next_node = str(row+1) + "_" + str(col)
-            init_graph[current_node][next_node] = int(lines[row+1][col])
-        if col + 1 < cols:
-            next_node = str(row) + "_" + str(col+1)
-            init_graph[current_node][next_node] = int(lines[row][col+1])
+for row in range(0,rows*5):
+    for col in range(0,cols*5):
+        current_node = (row,col)
+        nextRow = row
+        nextCol = col
+        #print(current_node + ":")
+        if row + 1 < rows*5:
+            nextRow = row + 1
+            qRow = nextRow // rows
+            modRow = nextRow % rows
+            qCol = nextCol // cols
+            modCol = nextCol % cols
+
+            #print("1next row is " + str(nextRow) + " and its mod is " + str(modRow))
+            #print("1next col is " + str(nextCol) + " and its mod is " + str(modCol))
+            value = ( int(lines[modRow][modCol]) + (qRow + qCol) ) % 9
+            if value == 0:
+                value = 9
+            #print("value is: " + str(value))
+            next_node = (nextRow,nextCol)
+            init_graph[current_node][next_node] = value
+        nextRow = row
+        if col + 1 < cols*5:
+            nextCol = col + 1
+            qRow = nextRow // rows
+            modRow = nextRow % rows
+            qCol = nextCol // cols
+            modCol = nextCol % cols
+            #print("2next row is " + str(nextRow) + " and its mod is " + str(modRow))
+            #print("2next col is " + str(nextCol) + " and its mod is " + str(modCol))
+            value = ( int(lines[modRow][modCol]) + (qRow + qCol) ) % 9
+            if value == 0:
+                value = 9
+            #print("value is: " + str(value))
+            next_node = (nextRow,nextCol)
+            init_graph[current_node][next_node] = value
+        nextCol = col
         if row - 1 >= 0:
-            next_node = str(row-1) + "_" + str(col)
-            init_graph[current_node][next_node] = int(lines[row-1][col])
+            nextRow = row - 1
+            qRow = nextRow // rows
+            modRow = nextRow % rows
+            qCol = nextCol // cols
+            modCol = nextCol % cols
+            #print("3next row is " + str(nextRow) + " and its mod is " + str(modRow))
+            #print("3next col is " + str(nextCol) + " and its mod is " + str(modCol))
+            value = ( int(lines[modRow][modCol]) + (qRow + qCol) ) % 9
+            if value == 0:
+                value = 9
+            #print("value is: " + str(value))
+            next_node = (nextRow,nextCol)
+            init_graph[current_node][next_node] = value
+        nextRow = row
         if col - 1 >= 0:
-            next_node = str(row) + "_" + str(col-1)
-            init_graph[current_node][next_node] = int(lines[row][col-1])
-        
+            nextCol = col - 1
+            qRow = nextRow // rows
+            modRow = nextRow % rows
+            qCol = nextCol // cols
+            modCol = nextCol % cols
+            #print("4next row is " + str(nextRow) + " and its mod is " + str(modRow))
+            #print("4next col is " + str(nextCol) + " and its mod is " + str(modCol))
+            value = ( int(lines[modRow][modCol]) + (qRow + qCol) ) % 9
+            if value == 0:
+                value = 9
+            #print("value is: " + str(value))
+            next_node = (nextRow,nextCol)
+            init_graph[current_node][next_node] = value
+
+#print(init_graph)    
 graph = Graph(nodes, init_graph)
 previous_nodes, shortest_path = dijkstra_algorithm(graph=graph, start_node=startNode)
 
