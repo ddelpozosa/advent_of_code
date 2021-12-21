@@ -1,6 +1,5 @@
 from os import path
 import timeit
-import sys
 
 start = timeit.default_timer()
 basepath = path.dirname(__file__)
