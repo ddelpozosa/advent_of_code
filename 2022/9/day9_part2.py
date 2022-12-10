@@ -5,141 +5,125 @@ p = Path(__file__).with_name('input.txt')
 f = p.open('r')
 lines = f.readlines()
 
-class Cell(object):
-    def __init__(self, tail=False, head=False, visited = False):
-        self.tail = tail
-        self.head = head
-        self.visited = visited
-    
-    def get_cell_string(self):
-        if self.head == True:
-            return "H"
-        elif self.tail == True:
-            return "T"
+class Chain(object):
+    def __init__(self, numberOfLinks):
+        self.visited_nodes = set()
+        self.links = []
+        self.links.append(Link("H"))
+        if numberOfLinks == 2:
+            self.links.append(Link("T"))
         else:
-            return "."
-
-class Board(object):
-    def __init__(self):
-        self.cells = []
-        row = []
-        row.append(Cell(True, True, True))
-        self.cells.append(row)
+            for i in range(1,numberOfLinks):
+                self.links.append(Link(i))
+    def move_chain(self, x_mov, y_mov):
+        link = self.links[0].move_head(x_mov,y_mov)
+        for i in range(1,len(self.links)):
+            link = self.links[i].move_link(link)
+        self.visited_nodes.add(tuple([self.links[-1].x,self.links[-1].y]))
+        #print(f'New node visited: {tuple([self.links[-1].x,self.links[-1].y])}')
+   
+    def get_name(self, x, y):
+        for link in self.links:
+            if link.x == x and link.y == y:
+                return link.name
+        return "."
     
-    def get_head(self):
-        for i, row in enumerate(self.cells):
-            for j, cell in enumerate(row):
-                if cell.head == True:
-                    return i,j
-        return -1,-1 ### in case of error (head not found)
-    
-    def get_tail(self):
-        for i, row in enumerate(self.cells):
-            for j, cell in enumerate(row):
-                if cell.tail == True:
-                    return i,j
-        return -1,-1 ### in case of error (tail not found)
-    
-    def increase_board(self,i,j):
-        final_i = i
-        final_j = j
-        if i == -1:
-            new_row = []
-            for col in self.cells[0]:
-                new_row.append(Cell())
-            self.cells.insert(0,new_row)
-            final_i = 0
-        elif j == -1:
-            for i, row in enumerate(self.cells):
-                self.cells[i].insert(0,Cell())
-            final_j = 0
-        elif i == len(self.cells):
-            new_row = []
-            for col in self.cells[0]:
-                new_row.append(Cell())
-            self.cells.append(new_row)
-        elif j == len(self.cells[0]):
-            for i, row in enumerate(self.cells):
-                self.cells[i].append(Cell())
-
-        return final_i, final_j
-
-    def move_head(self, init_i, init_j, dest_i, dest_j):
-        if dest_i >= 0 and dest_j >= 0 and dest_i < len(self.cells) and dest_j < len(self.cells[0]):
-            self.cells[init_i][init_j].head = False
-            self.cells[dest_i][dest_j].head = True
-        else:
-            #print("OUT OF BOUNDS. Making the board larger...")
-            self.cells[init_i][init_j].head = False
-            dest_i, dest_j = self.increase_board(dest_i,dest_j)
-            self.cells[dest_i][dest_j].head = True
-
-            
-
-    def move_tail(self, i,j):
-        head_i, head_j = self.get_head()
-        tail_i, tail_j = self.get_tail()
-
-        if abs(head_i-tail_i) > 1 or abs(head_j-tail_j) > 1:
-            self.cells[tail_i][tail_j].tail = False
-            self.cells[head_i+i][head_j+j].tail = True
-            self.cells[head_i+i][head_j+j].visited = True
-
-    def print_board(self):
+    def print_chain(self):
         output = ""
-        for row in self.cells:
-            for cell in row:
-                output += cell.get_cell_string()
+        max_x, min_x, max_y, min_y = 0,0,0,0
+        for link in self.links:
+            if link.x < min_x:
+                min_x = link.x
+            if link.x > max_x:
+                max_x = link.x
+            if link.y < min_y:
+                min_y = link.y
+            if link.y > max_y:
+                max_y = link.y
+        #print(f'{min_x}{min_x}{max_y}{min_y}')
+        for i in range(min_x, max_x+1):
+            for j in range(min_y, max_y+1):
+                if i == 0 and j == 0 and str(self.get_name(i,j)) == ".":
+                    output += "s"
+                else:
+                    output += str(self.get_name(i,j))
                 output += " "
             output += "\n"
         print(output)
 
-    def get_visited_cells(self):
-        nOfVisitedCells = 0
-        for row in self.cells:
-            for cell in row:
-                if cell.visited == True:
-                    nOfVisitedCells += 1
-        return nOfVisitedCells
+class Link(object):
+    def __init__(self, name):
+        self.name = name
+        self.x = 0
+        self.y = 0
 
-def moveCell(board: Board, order):
-    head_i, head_j = board.get_head()
+
+    def move_head(self, mov_x, mov_y):
+        self.x += mov_x
+        self.y += mov_y
+        return self
+
+    def move_link(self, parent_link):
+        
+        ##horizontal movemnt
+        if abs(parent_link.x-self.x) > 1 and abs(parent_link.y-self.y) == 0:
+            if parent_link.x > self.x:
+                self.x = parent_link.x - 1
+            else:
+                self.x = parent_link.x + 1
+
+        ##vertical movement
+        if abs(parent_link.y-self.y) > 1 and abs(parent_link.x-self.x) == 0:
+            if parent_link.y > self.y:
+                self.y = parent_link.y - 1
+            else:
+                self.y = parent_link.y + 1
+        
+        ##diagonal movement
+        elif abs(parent_link.x-self.x) > 1 or abs(parent_link.y-self.y) > 1:
+            if parent_link.x > self.x and parent_link.y > self.y:
+                self.x += 1
+                self.y += 1
+            elif parent_link.x > self.x and parent_link.y < self.y:
+                self.x += 1
+                self.y += -1
+            elif parent_link.x < self.x and parent_link.y > self.y:
+                self.x += -1
+                self.y += 1
+            elif parent_link.x < self.x and parent_link.y < self.y:
+                self.x += -1
+                self.y += -1
+        return self
+
+
+def order_chain(chain: Chain, order):
     if order == "U":
         #print("Moving UP")
-        board.move_head(head_i, head_j, head_i - 1, head_j)
-        board.move_tail(1,0)
+        chain.move_chain(-1,0)
 
     elif order == "R":
         #print("Moving RIGHT")
-        board.move_head(head_i, head_j, head_i, head_j + 1)
-        board.move_tail(0,-1)
+        chain.move_chain(0,1)
 
     elif order == "D":
         #print("Moving DOWN")
-        board.move_head(head_i, head_j, head_i + 1, head_j)
-        board.move_tail(-1,0)
+        chain.move_chain(1,0)
     elif order == "L":
         #print("Moving LEFT")
-        board.move_head(head_i, head_j, head_i, head_j - 1)  
-        board.move_tail(0,1)
-    return board
+        chain.move_chain(0,-1)
+    return chain
 
-
-### Init array ###
-board = Board()
-
-#print("INITIAL POSITION")
-#board.print_board()
+chain = Chain(10)
 
 for i, line in enumerate(lines):
-    print(f'Step {i} -- {line}')
+    #print(f'Step {i} -- {line}')
     order = line.strip().split(" ")[0]
     amount = int(line.strip().split(" ")[1])
     #print(f'=== {line.strip()} ===')
     for time in range(amount):
-        moveCell(board,order)
-        #board.print_board()
-        
-nOfVisitedCells = board.get_visited_cells()
+        order_chain(chain,order)
+        #chain.print_chain()
 
-print(f'A total of {nOfVisitedCells} cells have been visited by the tail of the rope at least once.')
+print(f'{len(chain.visited_nodes)} nodes have been visited by the tail.')
+#print(chain.visited_nodes)
+
