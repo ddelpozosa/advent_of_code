@@ -27,9 +27,9 @@ def part2(lines):
 
 if __name__ == "__main__":
     if args.test == "true":
-        lines = getLines("test.txt")
+        lines = getLines("test"+args.part+".txt")
     else:
-        lines = getLines("input.txt")
+        lines = getLines("input"+args.part+".txt")
     if args.part == "1":
         part1(lines)
     elif args.part == "2":
