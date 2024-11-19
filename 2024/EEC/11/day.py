@@ -51,6 +51,7 @@ def part1(lines):
         printtest("After " + str(days) +" days, there is a population of: " + str(countPopulation(population)))
         days += 1
     print("After " + str(days-1) +" days, there is a population of: " + str(countPopulation(population)))
+
 #Solution to Part 2
 def part2(lines):
     population,reproduction = parseInput(lines)
