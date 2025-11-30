@@ -1,0 +1,7 @@
+# Ignore production inputs
+**/input.txt
+
+# Ignore Python cache
+**/__pycache__/
+*.pyc
+*.pyo

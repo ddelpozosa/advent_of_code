@@ -2,6 +2,7 @@ import os
 import shutil
 from datetime import datetime
 import importlib.util
+import sys
 
 def start_day(day_number=None):
     if day_number is None:
@@ -21,6 +22,9 @@ def run_day(day_number=None, mode='test', test_num=None):
         day_number = datetime.now().day
     
     day_folder = f"days/day_{day_number:02d}"
+    
+    sys.path.insert(0, os.getcwd())  # Add src folder to path FIRST
+    
     if not os.path.exists(f"{day_folder}/solution.py"):
         print(f"Day {day_number:02d} not found")
         return
