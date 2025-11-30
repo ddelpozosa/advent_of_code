@@ -1,0 +1,56 @@
+import os
+import shutil
+from datetime import datetime
+import importlib.util
+
+def start_day(day_number=None):
+    if day_number is None:
+        day_number = datetime.now().day
+    
+    day_folder = f"days/day_{day_number:02d}"
+    os.makedirs(day_folder, exist_ok=True)
+    
+    shutil.copy("templates/solution.py", f"{day_folder}/solution.py")
+    open(f"{day_folder}/input.txt", "w").close()
+    open(f"{day_folder}/input_test_1.txt", "w").close()
+    
+    print(f"Created Day {day_number:02d}")
+
+def run_day(day_number=None, mode='test', test_num=None):
+    if day_number is None:
+        day_number = datetime.now().day
+    
+    day_folder = f"days/day_{day_number:02d}"
+    if not os.path.exists(f"{day_folder}/solution.py"):
+        print(f"Day {day_number:02d} not found")
+        return
+    
+    os.chdir(day_folder)
+    spec = importlib.util.spec_from_file_location("solution", "solution.py")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    
+    if mode in ['test', 't']:
+        _run_tests(module, test_num)
+    else:
+        _solve_prod(module)
+    
+    os.chdir("../..")
+
+def _run_tests(module, test_num=None):
+    tests = [module.TESTS[test_num]] if test_num is not None else module.TESTS
+    for i, test in enumerate(tests):
+        data = open(test["input"]).read()
+        parts = []
+        for part_name in ['part1', 'part2']:
+            expected = test[part_name]
+            if expected is not None:
+                result = getattr(module, part_name)(data) # Calls a function by its literal string name (part1 or part2)
+                status = '✓' if result == expected else '✗'
+                parts.append(f"{part_name.upper()}={result} {status}")
+        print(f"Test {i+1}: {' '.join(parts)}")
+
+def _solve_prod(module):
+    data = open("input.txt").read()
+    print(f"Part 1: {module.part1(data)}")
+    print(f"Part 2: {module.part2(data)}")
