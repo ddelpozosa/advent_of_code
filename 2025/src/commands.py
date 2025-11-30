@@ -17,13 +17,13 @@ def start_day(day_number=None):
     
     print(f"Created Day {day_number:02d}")
 
-def run_day(day_number=None, mode='test', test_num=None):
+def run_day(day_number=None, mode='test', test_num=None, part=None):
     if day_number is None:
         day_number = datetime.now().day
     
     day_folder = f"days/day_{day_number:02d}"
     
-    sys.path.insert(0, os.getcwd())  # Add src folder to path FIRST
+    sys.path.insert(0, os.getcwd())
     
     if not os.path.exists(f"{day_folder}/solution.py"):
         print(f"Day {day_number:02d} not found")
@@ -37,7 +37,7 @@ def run_day(day_number=None, mode='test', test_num=None):
     if mode in ['test', 't']:
         _run_tests(module, test_num)
     else:
-        _solve_prod(module)
+        _solve_prod(module, part)
     
     os.chdir("../..")
 
@@ -54,7 +54,9 @@ def _run_tests(module, test_num=None):
                 parts.append(f"{part_name.upper()}={result} {status}")
         print(f"Test {i+1}: {' '.join(parts)}")
 
-def _solve_prod(module):
+def _solve_prod(module, part=None):
     data = open("input.txt").read()
-    print(f"Part 1: {module.part1(data)}")
-    print(f"Part 2: {module.part2(data)}")
+    if part in [None, 1]:
+        print(f"Part 1: {module.part1(data)}")
+    if part in [None, 2]:
+        print(f"Part 2: {module.part2(data)}")
