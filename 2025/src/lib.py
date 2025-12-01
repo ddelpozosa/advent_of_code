@@ -1,6 +1,16 @@
 from collections import defaultdict, deque
 import heapq
 
+# Debugging utility
+_test_mode = False
+def set_test_mode(is_test):
+    global _test_mode
+    _test_mode = is_test
+
+def debug(*args, **kwargs):
+    if _test_mode:
+        print(*args, **kwargs)
+
 # Directions for grid traversal
 DIRECTIONS = {
     'up': (0, -1),

@@ -1,6 +1,7 @@
 import os
 import shutil
 from datetime import datetime
+from lib import set_test_mode
 import importlib.util
 import sys
 
@@ -22,14 +23,15 @@ def run_day(day_number=None, mode='test', test_num=None, part=None):
         day_number = datetime.now().day
     
     day_folder = f"days/day_{day_number:02d}"
+    solution_path = os.path.join(day_folder, "solution.py")
     
-    sys.path.insert(0, os.getcwd())
-    
-    if not os.path.exists(f"{day_folder}/solution.py"):
-        print(f"Day {day_number:02d} not found")
+    if not os.path.exists(solution_path):
+        print(f"Day {day_number:02d} not found at {solution_path}")
         return
     
+    sys.path.insert(0, os.getcwd())
     os.chdir(day_folder)
+    
     spec = importlib.util.spec_from_file_location("solution", "solution.py")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -42,6 +44,7 @@ def run_day(day_number=None, mode='test', test_num=None, part=None):
     os.chdir("../..")
 
 def _run_tests(module, test_num=None):
+    set_test_mode(True)
     tests = [module.TESTS[test_num]] if test_num is not None else module.TESTS
     for i, test in enumerate(tests):
         data = open(test["input"]).read()
@@ -55,6 +58,7 @@ def _run_tests(module, test_num=None):
         print(f"Test {i+1}: {' '.join(parts)}")
 
 def _solve_prod(module, part=None):
+    set_test_mode(False)
     data = open("input.txt").read()
     if part in [None, 1]:
         print(f"Part 1: {module.part1(data)}")
