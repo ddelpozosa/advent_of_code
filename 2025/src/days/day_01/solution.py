@@ -32,6 +32,8 @@ def calculate_rotations(dial_start, rotations, part=1):
                 number_of_ceroes += (dial + rotation) // 100
                 dial = (dial + rotation) % 100
             else:  # L (left/negative)
+            # We need to flip the dial to calculate on positive rotation. 
+            # In Python, // rounds towards the next lower integer, floor() function, not the actual quotient
                 flipped_dial = (100 - dial) % 100
                 number_of_ceroes += (flipped_dial + abs(rotation)) // 100
                 dial = (dial + rotation) % 100
