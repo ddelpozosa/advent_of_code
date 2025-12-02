@@ -22,7 +22,7 @@ def is_valid(id):
 def is_valid_part_2(id):
     str_id = str(id)
     length = len(str_id)
-    for i in range(1, length): # avoid checking full length (divisible by itself = same. needs at least one repetition)
+    for i in range(1, (length // 2)+1): # maximum part size for invalid Ids is half the string length (a group of 2)
         # if the string is divisible by i, check that all parts are different
         if len(str_id) % i == 0:
             parts = set()
