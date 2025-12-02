@@ -29,19 +29,22 @@ def run_day(day_number=None, mode='test', test_num=None, part=None):
         print(f"Day {day_number:02d} not found at {solution_path}")
         return
     
-    sys.path.insert(0, os.getcwd())
-    os.chdir(day_folder)
+    original_cwd = os.getcwd()
+    sys.path.insert(0, original_cwd)
     
-    spec = importlib.util.spec_from_file_location("solution", "solution.py")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    
-    if mode in ['test', 't']:
-        _run_tests(module, test_num)
-    else:
-        _solve_prod(module, part)
-    
-    os.chdir("../..")
+    try:
+        os.chdir(day_folder)
+        
+        spec = importlib.util.spec_from_file_location("solution", "solution.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        
+        if mode in ['test', 't']:
+            _run_tests(module, test_num)
+        else:
+            _solve_prod(module, part)
+    finally:
+        os.chdir(original_cwd)
 
 def _run_tests(module, test_num=None):
     set_test_mode(True)
