@@ -4,9 +4,9 @@ from datetime import datetime
 import importlib.util
 import sys
 import time
+from functools import wraps
 
-# Add parent directories to path to find lib
-sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# Add parent directory to path to find lib
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from lib import set_test_mode
@@ -16,7 +16,7 @@ def format_time(seconds):
     #if seconds < 0.001:
     #    return f"{seconds * 1_000_000:.2f}µs"
     if seconds < 1:
-        return f"{seconds * 1_000:.2f}ms"
+        return f"{seconds * 1_000:.4f}ms"
     else:
         return f"{seconds:.2f}s"
 
@@ -46,7 +46,6 @@ def run_day(day_number=None, mode='test', test_num=None, part=None):
     
     original_cwd = os.getcwd()
     sys.path.insert(0, original_cwd)
-    sys.path.insert(0, os.path.join(original_cwd, ".."))  # Add parent directory to path
     
     try:
         os.chdir(day_folder)
