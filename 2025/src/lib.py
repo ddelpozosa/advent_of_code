@@ -20,11 +20,11 @@ DIRECTIONS = {
     'diag': [(-1, -1), (-1, 1), (1, -1), (1, 1)]
 }
 
-def neighbors(x, y, include_diag=False):
+def neighbors(grid, x, y, include_diag=False):
     dirs = [DIRECTIONS[d] for d in ['up', 'down', 'left', 'right']]
     if include_diag:
         dirs += DIRECTIONS['diag']
-    return [(x + dx, y + dy) for dx, dy in dirs]
+    return [(x + dx, y + dy) for dx, dy in dirs if 0 <= x + dx < len(grid[0]) and 0 <= y + dy < len(grid)]
 
 def bfs(start, goal, neighbors_func):
     #Breadth-first search
