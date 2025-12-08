@@ -11,6 +11,9 @@ def debug(*args, **kwargs):
     if _test_mode:
         print(*args, **kwargs)
 
+def is_test_mode():
+    return _test_mode
+
 # Directions for grid traversal
 DIRECTIONS = {
     'up': (0, -1),
