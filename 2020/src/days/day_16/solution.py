@@ -64,9 +64,10 @@ def get_valid_tickets(my_ticket, tickets, ranges):
     return valid_tickets
 
 def part1(data):
-    rules, my_ticket, tickets = parse(data)
+    rules, _, tickets = parse(data)
     ranges = get_valid_ranges(rules)
     invalid_sum = 0
+    # Find the sum of invalid fields for each ticket
     for ticket in tickets:
         for value in ticket:
             if not is_valid_value(value, ranges):
