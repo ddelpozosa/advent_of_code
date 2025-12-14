@@ -87,7 +87,7 @@ def parse_numbers(data):
 
 def parse_groups(data):
     #Parse input as groups separated by blank lines
-    return data.strip().split('\n\n')
+    return [group.split('\n') for group in data.strip().split('\n\n')]
 
 class Graph:
     def __init__(self):
